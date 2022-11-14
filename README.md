@@ -13,3 +13,40 @@ Deve ter pelo menos dois nós, e poderá utilizar/adaptar helm charts existentes
 entrevista posterior, pelo qual deve conhecer bem a ferramenta Helm.
 
 Poderá completar o desafio até dia 14 de Novembro ao final do dia. Idealmente, até ao dia 11 de Novembro.
+
+```
+
+Using variables.tf or a tfvars file:
+
+```
+terraform
+  module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+
+  aws-region          = var.aws-region
+  availability-zones  = var.availability-zones
+  cluster-name        = var.cluster-name
+  k8s-version         = var.k8s-version
+  node-instance-type  = var.node-instance-type
+  root-block-size     = var.root-block-size
+  desired-capacity    = var.desired-capacity
+  max-size            = var.max-size
+  min-size            = var.min-size
+  vpc-subnet-cidr     = var.vpc-subnet-cidr
+  private-subnet-cidr = var.private-subnet-cidr
+  public-subnet-cidr  = var.public-subnet-cidr
+  ec2-key-public-key  = var.ec2-key
+}
+```
+### IAM
+
+The AWS credentials must be associated with a user having at least the following AWS managed IAM policies
+
+* IAMFullAccess
+* AutoScalingFullAccess
+* AmazonEKSClusterPolicy
+* AmazonEKSWorkerNodePolicy
+* AmazonVPCFullAccess
+* AmazonEKSServicePolicy
+* AmazonEKS_CNI_Policy
+```
