@@ -16,9 +16,10 @@ Poderá completar o desafio até dia 14 de Novembro ao final do dia. Idealmente,
 
 ```
 
-Using variables.tf or a tfvars file:
-
-```terraform
+Using variables.tf:
+```
+### EKS
+terraform
   module "eks" {
   source  = "terraform-aws-modules/eks/aws"
 
@@ -48,4 +49,94 @@ The AWS credentials must be associated with a user having at least the following
 * AmazonVPCFullAccess
 * AmazonEKSServicePolicy
 * AmazonEKS_CNI_Policy
+* AmazonEC2FullAccess
+```
+*EKS*
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "eks:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+### Terraform
+
+You need to run the following commands to create the resources with Terraform:
+
+```bash
+terraform init
+terraform plan
+terraform apply
+```
+
+Save architeture in tfstate `terraform plan -out eks-state` 
+** This project wasn´t save in S3 storage but it can [S3 backend](https://www.terraform.io/docs/backends/types/s3.htm
+
+### Setup kubectl
+
+Setup your `KUBECONFIG`
+
+```bash
+terraform output kubeconfig > ~/.kube/eks-cluster
+export KUBECONFIG=~/.kube/eks-cluster
+```
+
+### Authorize users to access the cluster
+
+Initially, only the system that deployed the cluster will be able to access the cluster. To authorize other users for accessing the cluster, `aws-auth` config needs to be modified by using the steps given below:
+
+* Open the aws-auth file in the edit mode on the machine that has been used to deploy EKS cluster:
+
+```bash
+sudo kubectl edit -n kube-system configmap/aws-auth
+```
+
+* Add the following configuration in that file by changing the placeholders:
+
+
+```yaml
+
+mapUsers: |
+  - userarn: arn:aws:iam::111122223333:user/<username>
+    username: <username>
+    groups:
+      - system:masters
+```
+
+So, the final configuration would look like this:
+
+```yaml
+apiVersion: v1
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::555555555555:role/devel-worker-nodes-NodeInstanceRole-74RF4UBDUKL6
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+  mapUsers: |
+    - userarn: arn:aws:iam::111122223333:user/<username>
+      username: <username>
+      groups:
+        - system:masters
+```
+
+* Once the user map is added in the configuration we need to create cluster role binding for that user:
+
+```bash
+kubectl create clusterrolebinding ops-user-cluster-admin-binding-<username> --clusterrole=cluster-admin --user=<username>
+```
+
+```bash
+terraform plan -destroy
+terraform destroy  --force
 ```
