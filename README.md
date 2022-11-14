@@ -43,7 +43,7 @@ module "eks" {
 
 ### IAM
 
-The AWS credentials must be associated with a user having at least the following AWS managed IAM policies
+As credenciais da AWS devem estar associadas a um usuário que tenha pelo menos as seguintes políticas de IAM gerenciadas pela AWS
 
 * IAMFullAccess
 * AutoScalingFullAccess
@@ -73,16 +73,14 @@ The AWS credentials must be associated with a user having at least the following
 
 ### Terraform
 
-You need to run the following commands to create the resources with Terraform:
-
 ```bash
 terraform init
 terraform plan
 terraform apply
 ```
 
-Save architeture in tfstate `terraform plan -out eks-state` 
-** This project wasn´t save in S3 storage but it can [S3 backend](https://www.terraform.io/docs/backends/types/s3.htm
+Salvar arquitetura em tfstate `terraform plan -out eks-state`
+** Este projeto não foi salvo no armazenamento S3, mas poderia [S3 backend](https://www.terraform.io/docs/backends/types/s3.htm
 
 ### Setup kubectl
 
@@ -93,17 +91,17 @@ terraform output kubeconfig > ~/.kube/eks-cluster
 export KUBECONFIG=~/.kube/eks-cluster
 ```
 
-### Authorize users to access the cluster
+### Autorizar usuários a acessar o cluster
 
-Initially, only the system that deployed the cluster will be able to access the cluster. To authorize other users for accessing the cluster, `aws-auth` config needs to be modified by using the steps given below:
+Inicialmente, apenas o sistema que implantou o cluster poderá acessar o cluster. Para autorizar outros usuários a acessar o cluster, a configuração `aws-auth` precisa ser modificada usando as etapas abaixo:
 
-* Open the aws-auth file in the edit mode on the machine that has been used to deploy EKS cluster:
+* Abra o arquivo aws-auth no modo de edição na máquina que foi usada para implantar o cluster EKS:
 
 ```bash
 sudo kubectl edit -n kube-system configmap/aws-auth
 ```
 
-* Add the following configuration in that file by changing the placeholders:
+* Adicione a seguinte configuração nesse arquivo alterando os espaços reservados:
 
 
 ```yaml
@@ -114,8 +112,7 @@ mapUsers: |
     groups:
       - system:masters
 ```
-
-So, the final configuration would look like this:
+A configuração final deve ficar assim, ex:
 
 ```yaml
 apiVersion: v1
@@ -133,7 +130,7 @@ data:
         - system:masters
 ```
 
-* Once the user map is added in the configuration we need to create cluster role binding for that user:
+* Depois que o mapa do usuário for adicionado à configuração, precisamos criar a vinculação de função do cluster para esse usuário:
 
 ```bash
 kubectl create clusterrolebinding ops-user-cluster-admin-binding-<username> --clusterrole=cluster-admin --user=<username>
