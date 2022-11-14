@@ -19,9 +19,9 @@ Poderá completar o desafio até dia 14 de Novembro ao final do dia. Idealmente,
 Using variables.tf:
 ```
 ### EKS
-terraform
-  module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
+```terraform
+module "eks" {
+  source  = "WesleyCharlesBlake/eks/aws"
 
   aws-region          = var.aws-region
   availability-zones  = var.availability-zones
@@ -35,9 +35,12 @@ terraform
   vpc-subnet-cidr     = var.vpc-subnet-cidr
   private-subnet-cidr = var.private-subnet-cidr
   public-subnet-cidr  = var.public-subnet-cidr
+  db-subnet-cidr      = var.db-subnet-cidr
+  eks-cw-logging      = var.eks-cw-logging
   ec2-key-public-key  = var.ec2-key
 }
 ```
+
 ### IAM
 
 The AWS credentials must be associated with a user having at least the following AWS managed IAM policies
