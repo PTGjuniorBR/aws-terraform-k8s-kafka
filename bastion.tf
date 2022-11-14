@@ -1,5 +1,3 @@
-### bastion
-
 ### bastion hosts
 module "bastion-asg" {
   source  = "terraform-aws-modules/autoscaling/aws"
