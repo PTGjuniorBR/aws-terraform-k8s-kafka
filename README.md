@@ -18,8 +18,7 @@ Poderá completar o desafio até dia 14 de Novembro ao final do dia. Idealmente,
 
 Using variables.tf or a tfvars file:
 
-```
-terraform
+```terraform
   module "eks" {
   source  = "terraform-aws-modules/eks/aws"
 
